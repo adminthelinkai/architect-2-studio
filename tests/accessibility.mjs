@@ -13,6 +13,9 @@ await page.waitForTimeout(1400);
 const results = [];
 for (const path of [
   "overview",
+  "start",
+  "portability",
+  "project/support-copilot/readiness",
   "templates",
   "projects",
   "library",

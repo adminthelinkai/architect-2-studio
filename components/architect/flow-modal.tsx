@@ -165,7 +165,7 @@ function Flow({ ctx }: { ctx: Context }) {
       />
       <small>
         {framework === "Lyzr"
-          ? "Native configuration"
+          ? "Configuration schema only · runtime not connected"
           : framework === "Custom runtime" || framework === "External endpoint"
             ? "Endpoint contract · bring any runtime"
             : "Adapter contract · runtime integration required"}

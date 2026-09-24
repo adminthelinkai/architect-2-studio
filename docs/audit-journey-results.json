@@ -1,0 +1,101 @@
+{
+  "results": [
+    {
+      "name": "Onboarding is discoverable from home",
+      "passed": true
+    },
+    {
+      "name": "Business path exposes three outcome prompts",
+      "passed": true
+    },
+    {
+      "name": "Developer starting path reaches real portability",
+      "passed": true
+    },
+    {
+      "name": "Export carries a versioned project contract",
+      "passed": true
+    },
+    {
+      "name": "Handoff includes requirements and honest runtime limitations",
+      "passed": true
+    },
+    {
+      "name": "Invalid JSON is rejected",
+      "passed": true
+    },
+    {
+      "name": "Invalid project schema rejected",
+      "passed": true
+    },
+    {
+      "name": "Invalid import cannot restore",
+      "passed": true
+    },
+    {
+      "name": "Oversized import rejected",
+      "passed": true
+    },
+    {
+      "name": "Import creates one separate saved project",
+      "passed": true
+    },
+    {
+      "name": "Original project preserved",
+      "passed": true
+    },
+    {
+      "name": "Imported evidence is reset instead of trusted",
+      "passed": true
+    },
+    {
+      "name": "Blueprint and example code survive round trip",
+      "passed": true
+    },
+    {
+      "name": "Agent IDs are remapped",
+      "passed": true
+    },
+    {
+      "name": "Restored draft survives reload",
+      "passed": true
+    },
+    {
+      "name": "Runtime evidence is explicitly unverified",
+      "passed": true
+    },
+    {
+      "name": "Evidence export never claims production approval",
+      "passed": true
+    },
+    {
+      "name": "Accessibility: start",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: start",
+      "passed": true
+    },
+    {
+      "name": "Accessibility: portability",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: portability",
+      "passed": true
+    },
+    {
+      "name": "Accessibility: project/4215ab95-9ef9-4831-8fc5-9f3f3ac6821e/readiness",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: project/4215ab95-9ef9-4831-8fc5-9f3f3ac6821e/readiness",
+      "passed": true
+    },
+    {
+      "name": "No new runtime errors",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

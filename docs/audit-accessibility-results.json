@@ -1,0 +1,78 @@
+[
+  {
+    "path": "overview",
+    "violations": []
+  },
+  {
+    "path": "start",
+    "violations": []
+  },
+  {
+    "path": "portability",
+    "violations": []
+  },
+  {
+    "path": "project/support-copilot/readiness",
+    "violations": []
+  },
+  {
+    "path": "templates",
+    "violations": []
+  },
+  {
+    "path": "projects",
+    "violations": []
+  },
+  {
+    "path": "library",
+    "violations": []
+  },
+  {
+    "path": "connections",
+    "violations": []
+  },
+  {
+    "path": "knowledge",
+    "violations": []
+  },
+  {
+    "path": "settings",
+    "violations": []
+  },
+  {
+    "path": "usage",
+    "violations": []
+  },
+  {
+    "path": "activity",
+    "violations": []
+  },
+  {
+    "path": "project/support-copilot/blueprint",
+    "violations": []
+  },
+  {
+    "path": "project/support-copilot/data",
+    "violations": []
+  },
+  {
+    "path": "project/support-copilot/tests",
+    "violations": []
+  },
+  {
+    "path": "project/support-copilot/monitor",
+    "violations": []
+  },
+  {
+    "path": "project/support-copilot/build",
+    "violations": []
+  },
+  {
+    "path": "project/support-copilot/agents",
+    "violations": []
+  },
+  {
+    "path": "project/support-copilot/release",
+    "violations": []
+  }
+]

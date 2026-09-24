@@ -24,6 +24,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Context } from "./workbench";
 import { PageHead, SelectBox, Empty } from "./workspace-views";
+import { ReadinessView } from "./launch-views";
 import { uid } from "./model";
 export function ProjectView({ ctx }: { ctx: Context }) {
   return ctx.page === "build" ? (
@@ -36,6 +37,8 @@ export function ProjectView({ ctx }: { ctx: Context }) {
     <Data ctx={ctx} />
   ) : ctx.page === "tests" ? (
     <Tests ctx={ctx} />
+  ) : ctx.page === "readiness" ? (
+    <ReadinessView ctx={ctx} />
   ) : ctx.page === "release" ? (
     <Release ctx={ctx} />
   ) : (
@@ -1009,6 +1012,19 @@ function Release({ ctx }: { ctx: Context }) {
           New deployment
         </button>
       </PageHead>
+      <div className="release-evidence-callout">
+        <ShieldCheck size={20} />
+        <span>
+          <b>Configuration is not production evidence.</b> Inspect runtime gaps
+          before making a release decision.
+        </span>
+        <button
+          className="text-button"
+          onClick={() => ctx.nav("readiness", p.id)}
+        >
+          Open evidence ledger →
+        </button>
+      </div>
       <div className="two-col">
         <section className="panel">
           <div className="section-title">
@@ -1040,10 +1056,10 @@ function Release({ ctx }: { ctx: Context }) {
           <div className="section-title">
             <h2>
               <ShieldCheck size={19} />
-              Release readiness
+              Demo configuration readiness
             </h2>
             <span className={"badge " + (ready ? "success" : "")}>
-              {ready ? "Demo ready" : "Review needed"}
+              {ready ? "Simulation ready" : "Review needed"}
             </span>
           </div>
           {[

@@ -13,7 +13,7 @@ const agent = z.object({
   approval: z.boolean(),
   budget: z.number().finite().min(0.01).max(1000),
 });
-const project = z.object({
+export const projectSchema = z.object({
   id,
   name: short,
   description: text,
@@ -55,7 +55,7 @@ const project = z.object({
 export const workspaceInput = z.object({
   revision: z.number().int().nonnegative(),
   state: z.object({
-    projects: z.array(project).max(60),
+    projects: z.array(projectSchema).max(60),
     connections: z
       .array(
         z.object({

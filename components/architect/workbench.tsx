@@ -70,6 +70,7 @@ import {
   ActivityView,
 } from "./workspace-views";
 import { ProjectView } from "./project-view";
+import { StartView, PortabilityView } from "./launch-views";
 import { FlowModal } from "./flow-modal";
 type Account = { name: string; email: string } | null;
 export type ModalPayload = {
@@ -343,11 +344,13 @@ export default function Workbench({ user }: { user: Account }) {
   }, []);
   const menu = [
     { name: "Overview", id: "overview", icon: LayoutGrid },
+    { name: "Getting started", id: "start", icon: Compass },
     { name: "All projects", id: "projects", icon: FolderOpen },
     { name: "Agent library", id: "library", icon: Workflow },
     { name: "Templates", id: "templates", icon: Layers },
     { name: "Connections", id: "connections", icon: Plug },
     { name: "Knowledge", id: "knowledge", icon: BookOpen },
+    { name: "Project portability", id: "portability", icon: Download },
   ];
   const projectMenu = [
     { name: "Build", id: "build", icon: Code2 },
@@ -355,6 +358,7 @@ export default function Workbench({ user }: { user: Account }) {
     { name: "Agents & workflows", id: "agents", icon: Workflow },
     { name: "Data & identity", id: "data", icon: Layers },
     { name: "Test lab", id: "tests", icon: Check },
+    { name: "Evidence & readiness", id: "readiness", icon: Check },
     { name: "Release", id: "release", icon: Cloud },
     { name: "Monitor", id: "monitor", icon: Activity },
   ];
@@ -580,6 +584,10 @@ export default function Workbench({ user }: { user: Account }) {
           <ProjectView key={project.id} ctx={ctx} />
         ) : page === "overview" ? (
           <HomeView ctx={ctx} />
+        ) : page === "start" ? (
+          <StartView ctx={ctx} />
+        ) : page === "portability" ? (
+          <PortabilityView ctx={ctx} />
         ) : page === "projects" ? (
           <ProjectsView ctx={ctx} />
         ) : page === "templates" ? (

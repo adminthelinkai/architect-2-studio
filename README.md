@@ -63,3 +63,9 @@ The workspace is stored as a bounded JSON document per authenticated user. This 
 Introduce normalized tenant/project membership, durable job queues, sandboxed builds, secure secret storage, framework adapters, GitHub App authorization, real model/tool execution, deployment-provider adapters, executable acceptance tests, OpenTelemetry traces, and audited human approvals. Keep the existing UI contract while replacing the simulation adapters.
 
 Source repository: https://github.com/adminthelinkai/architect-2-studio (private).
+
+## Audit iteration
+
+The owner/user audit is in [docs/OWNER-AUDIT.md](docs/OWNER-AUDIT.md). New screens provide role-oriented onboarding, actual project-configuration JSON import/export, a Markdown engineering handoff, and an evidence ledger that distinguishes configuration from runtime verification. GitHub/ZIP source import remains simulated. Imported configuration is restored as a new draft with new IDs, cleared deployments, and reset scenario results.
+
+Run `node tests/audit.mjs` against the disposable local development workspace to test the new journeys. The original 9/10 review was a prototype self-assessment; the audit provides a narrower comparative score and explicitly does not certify production readiness.

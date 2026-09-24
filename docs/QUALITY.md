@@ -44,3 +44,7 @@ No live AI generation, arbitrary code execution, GitHub App integration, externa
 Optional WebMCP navigation is feature-detected. The available local browser does not provide a supported WebMCP registry, so runtime validation of that optional interface was unavailable. UI navigation itself is tested.
 
 Production-runtime readiness is not included in the 9/10 UX prototype rating. No latency/load, penetration, cross-browser, or independent usability study is claimed.
+
+## Owner audit update — 24 September 2026
+
+See [OWNER-AUDIT.md](OWNER-AUDIT.md) for the stricter comparative assessment. The initial 9/10 score above is historical and limited to the first prototype brief. It is not an independently verified score or evidence of market advantage. The audit's entry-UX comparison is 8.6/10 for the revised prototype versus a low-confidence 6.4/10 screenshot-only base assessment. Full feature parity and public production readiness are not established.

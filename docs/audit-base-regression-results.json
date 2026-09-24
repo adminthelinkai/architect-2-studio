@@ -1,0 +1,161 @@
+{
+  "results": [
+    {
+      "name": "Anonymous API access denied",
+      "passed": true
+    },
+    {
+      "name": "Local platform sign-in and workspace load",
+      "passed": true
+    },
+    {
+      "name": "Invalid workspace rejected",
+      "passed": true
+    },
+    {
+      "name": "Concurrent revision conflict protected",
+      "passed": true
+    },
+    {
+      "name": "Empty brief validation",
+      "passed": true
+    },
+    {
+      "name": "Prompt creates a connected project",
+      "passed": true
+    },
+    {
+      "name": "Blueprint persists after reload",
+      "passed": true
+    },
+    {
+      "name": "Prompt iteration updates preview heading",
+      "passed": true
+    },
+    {
+      "name": "Interactive app request saved",
+      "passed": true
+    },
+    {
+      "name": "Agent configuration editable",
+      "passed": true
+    },
+    {
+      "name": "Approval configuration failure detected",
+      "passed": true
+    },
+    {
+      "name": "Approval remediation passes simulation",
+      "passed": true
+    },
+    {
+      "name": "Database demo record saved",
+      "passed": true
+    },
+    {
+      "name": "Deployment failure and retry state",
+      "passed": true
+    },
+    {
+      "name": "Release record appears",
+      "passed": true
+    },
+    {
+      "name": "Import validates repository URL",
+      "passed": true
+    },
+    {
+      "name": "Import journey creates project metadata",
+      "passed": true
+    },
+    {
+      "name": "Connection authorization simulation",
+      "passed": true
+    },
+    {
+      "name": "Knowledge metadata flow",
+      "passed": true
+    },
+    {
+      "name": "Team invitation demo",
+      "passed": true
+    },
+    {
+      "name": "Human approval inbox",
+      "passed": true
+    },
+    {
+      "name": "Keyboard command navigation",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: overview",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: projects",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: library",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: templates",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: connections",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: knowledge",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: settings",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: usage",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: activity",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: project/d961a5ad-fbb8-4337-93ff-4f2dfed23c08/build",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: project/d961a5ad-fbb8-4337-93ff-4f2dfed23c08/blueprint",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: project/d961a5ad-fbb8-4337-93ff-4f2dfed23c08/agents",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: project/d961a5ad-fbb8-4337-93ff-4f2dfed23c08/data",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: project/d961a5ad-fbb8-4337-93ff-4f2dfed23c08/tests",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: project/d961a5ad-fbb8-4337-93ff-4f2dfed23c08/release",
+      "passed": true
+    },
+    {
+      "name": "Mobile width: project/d961a5ad-fbb8-4337-93ff-4f2dfed23c08/monitor",
+      "passed": true
+    },
+    {
+      "name": "No browser runtime exceptions",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

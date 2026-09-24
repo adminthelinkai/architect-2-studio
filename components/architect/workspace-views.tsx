@@ -47,11 +47,13 @@ export function SelectBox({
   value,
   onChange,
   options,
+  optionLabels,
   label,
 }: {
   value: string;
   onChange: (v: string) => void;
   options: string[];
+  optionLabels?: Record<string, string>;
   label: string;
 }) {
   return (
@@ -62,7 +64,7 @@ export function SelectBox({
       <SelectContent>
         {options.map((s) => (
           <SelectItem key={s} value={s}>
-            {s}
+            {optionLabels?.[s] || s}
           </SelectItem>
         ))}
       </SelectContent>
@@ -268,6 +270,15 @@ export function HomeView({ ctx }: { ctx: Context }) {
         <button onClick={() => ctx.setModal("consultant")}>
           <Sparkles size={16} />
           Help me find an idea
+        </button>
+      </div>
+      <div className="start-nudge">
+        <span>
+          <b>New to Architect?</b> Choose a guided path or bring your technical
+          workflow.
+        </span>
+        <button className="text-button" onClick={() => ctx.nav("start")}>
+          Find your starting point <ArrowRight size={16} />
         </button>
       </div>
       <section className="projects-section">

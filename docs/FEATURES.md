@@ -43,3 +43,10 @@
 ## Scope boundaries
 
 The product is a demonstrable UX prototype, not a production replacement for an IDE, sandbox service, LLM orchestrator, or deployment provider. Configuration is saved per authenticated site user. Demo invitations do not grant access. The hosted site itself remains owner-private unless the owner changes its audience through the hosting platform.
+
+## Audit-led additions
+
+- Getting started: explicit Business and Technical paths, three editable outcome prompts, and an explanation of the first-session journey.
+- Project portability: versioned single-project JSON export, full schema-validated import into a separate draft, and a downloadable engineering handoff. No source execution occurs.
+- Evidence & readiness: five derived configuration checks and four explicitly unverified runtime categories, framework support disclosure, and a downloadable ledger.
+- Source import, runtime execution, external connectors and generated-app deployment remain simulations.
