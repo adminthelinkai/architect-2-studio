@@ -13,10 +13,12 @@ const errorMessage = (data: unknown, fallback: string) =>
   z.object({ error: z.string() }).safeParse(data).data?.error || fallback;
 
 /** Serializes saves, preserves failed edits, and never treats a failed load as a new workspace. */
-export function useWorkspace() {
+export function useWorkspace(demo = false) {
   const [ws, setWs] = useState<Workspace>(seedWorkspace);
-  const [loaded, setLoaded] = useState(false);
-  const [saveStatus, setSaveStatus] = useState("Loading workspace");
+  const [loaded, setLoaded] = useState(demo);
+  const [saveStatus, setSaveStatus] = useState(
+    demo ? "Demo · session only" : "Loading workspace",
+  );
   const [saveError, setSaveError] = useState("");
   const [saveConflict, setSaveConflict] = useState(false);
   const [loadAttempt, setLoadAttempt] = useState(0);
@@ -30,6 +32,7 @@ export function useWorkspace() {
     latest.current = ws;
   }, [ws]);
   useEffect(() => {
+    if (demo) return;
     const controller = new AbortController();
     fetch("/api/workspace", { signal: controller.signal, cache: "no-store" })
       .then(async (response) => {
@@ -62,9 +65,9 @@ export function useWorkspace() {
         setSaveStatus("Not loaded");
       });
     return () => controller.abort();
-  }, [loadAttempt]);
+  }, [loadAttempt, demo]);
   useEffect(() => {
-    if (!loaded || blocked.current) return;
+    if (demo || !loaded || blocked.current) return;
     const snapshot = JSON.stringify(ws);
     if (snapshot === saved.current) return;
     setSaveStatus("Saving changes");
@@ -109,8 +112,9 @@ export function useWorkspace() {
       });
     }, 650);
     return () => clearTimeout(timer);
-  }, [ws, loaded, saveAttempt]);
+  }, [ws, loaded, saveAttempt, demo]);
   useEffect(() => {
+    if (demo) return;
     const warn = (event: BeforeUnloadEvent) => {
       if (
         loaded &&
@@ -123,7 +127,7 @@ export function useWorkspace() {
     };
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
-  }, [loaded]);
+  }, [loaded, demo]);
   const retryLoad = useCallback(() => {
     setSaveError("");
     setSaveStatus("Loading workspace");

@@ -124,7 +124,13 @@ export type Context = {
   saveStatus: string;
   exportProject: () => void;
 };
-export default function Workbench({ user }: { user: Account }) {
+export default function Workbench({
+  user,
+  demo = false,
+}: {
+  user: Account;
+  demo?: boolean;
+}) {
   const {
     ws,
     setWs,
@@ -134,8 +140,13 @@ export default function Workbench({ user }: { user: Account }) {
     saveConflict,
     retryLoad,
     retrySave,
-  } = useWorkspace();
-  const initials = (user?.name || "Studio creator").split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+  } = useWorkspace(demo);
+  const initials = (user?.name || "Studio creator")
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
   const [page, setPage] = useState("overview");
   const [projectId, setProjectId] = useState("");
   const [modal, setModal] = useState("");
@@ -318,6 +329,7 @@ export default function Workbench({ user }: { user: Account }) {
     { name: "Data & identity", id: "data", icon: Layers },
     { name: "Test lab", id: "tests", icon: Check },
     { name: "Evidence & readiness", id: "readiness", icon: Check },
+    { name: "Changes & Git", id: "review", icon: Code2 },
     { name: "Release", id: "release", icon: Cloud },
     { name: "Monitor", id: "monitor", icon: Activity },
   ];
@@ -467,6 +479,15 @@ export default function Workbench({ user }: { user: Account }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
+        {demo && (
+          <div className="guest-banner">
+            <span>
+              <b>Explore Architect</b> · Session-only demo. Refresh resets your
+              changes.
+            </span>
+            <a href="/auth">Sign in to save your work →</a>
+          </div>
+        )}
         <header className="topbar">
           <div className="top-title">
             <SidebarTrigger />
@@ -490,13 +511,20 @@ export default function Workbench({ user }: { user: Account }) {
           </div>
           <div className="top-actions">
             {project && (
-              <button
-                className={"view-toggle " + (developer ? "developer" : "")}
-                onClick={() => setDeveloper(!developer)}
-              >
-                {developer ? <Code2 size={14} /> : <Compass size={14} />}
-                <span>{developer ? "Developer" : "Guided"}</span>
-              </button>
+              <div className="mode-switch" aria-label="Project perspective">
+                <button
+                  aria-pressed={!developer}
+                  onClick={() => setDeveloper(false)}
+                >
+                  Business
+                </button>
+                <button
+                  aria-pressed={developer}
+                  onClick={() => setDeveloper(true)}
+                >
+                  Developer
+                </button>
+              </div>
             )}
             <button
               aria-label="Search workspace"

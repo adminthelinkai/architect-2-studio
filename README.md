@@ -1,6 +1,10 @@
 # Architect 2.0
 
-A responsive product prototype for building agentic applications: one project, two ways of working. Guided mode starts with intent and preview; Developer mode opens editable example code and runtime logs.
+A responsive product prototype for building agentic applications: one project, two ways of working. Business mode starts with intent and preview; Developer mode exposes the same project through source artifacts, agent configuration and change review.
+
+## Two-minute evaluator journey
+
+Open `/auth` and choose **Try Demo**. No account is required. In Support Copilot, choose **Add approval before publishing**, send the request, then switch between **Business** and **Developer**. Inspect the shared blueprint, agent configuration and approval preview. Open **Changes & Git**, review and validate, configure a repository label, and simulate a commit. Continue to Release, run the scenario checks and record a simulated deployment. Guest edits live only in memory; sign-in retains the private saved workspace.
 
 ## What works
 
@@ -37,6 +41,7 @@ npm run test:e2e
 npm run test:audit
 npm run test:resilience
 npm run test:a11y
+npm run test:refinement
 ```
 
 **E2E tests reset the local simulator's demo workspace.** Use a disposable local database; never redirect these tests to a live deployment. They are intentionally fixed to localhost. Screenshots and test output go to ignored `work/qa/`.
@@ -54,7 +59,9 @@ flowchart LR
   Auth[Platform identity headers] --> API
 ```
 
-- `app/`: authenticated entry point, auth experience, and workspace API.
+- `app/`: authenticated entry point, auth experience, isolated guest demo, and private workspace API.
+- `components/architect/connected-flow.tsx`: requirement-to-artifact trace, both perspectives, review and validation.
+- `components/architect/delivery-adapter.ts`: replaceable simulated Git boundary and configuration snapshot identity.
 - `components/architect/`: domain model, workspace shell, project views, and feature flows.
 - `db/` and `drizzle/`: schema, input validation, and generated migration.
 - `tests/`: real browser regression and accessibility checks.

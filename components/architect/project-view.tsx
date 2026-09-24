@@ -26,23 +26,40 @@ import { Context } from "./workbench";
 import { PageHead, SelectBox, Empty } from "./workspace-views";
 import { ReadinessView } from "./launch-views";
 import { uid } from "./model";
+import { projectSnapshot } from "./delivery-adapter";
+import {
+  Lifecycle,
+  ConnectedContext,
+  DeveloperFiles,
+  ReviewChanges,
+  AgentActivity,
+  approvalChange,
+  BuildActivity,
+} from "./connected-flow";
 export function ProjectView({ ctx }: { ctx: Context }) {
-  return ctx.page === "build" ? (
-    <Build key={String(ctx.developer)} ctx={ctx} />
-  ) : ctx.page === "blueprint" ? (
-    <Blueprint ctx={ctx} />
-  ) : ctx.page === "agents" ? (
-    <Agents ctx={ctx} />
-  ) : ctx.page === "data" ? (
-    <Data ctx={ctx} />
-  ) : ctx.page === "tests" ? (
-    <Tests ctx={ctx} />
-  ) : ctx.page === "readiness" ? (
-    <ReadinessView ctx={ctx} />
-  ) : ctx.page === "release" ? (
-    <Release ctx={ctx} />
-  ) : (
-    <Monitoring ctx={ctx} />
+  return (
+    <>
+      <Lifecycle ctx={ctx} />
+      {ctx.page === "review" ? (
+        <ReviewChanges ctx={ctx} />
+      ) : ctx.page === "build" ? (
+        <Build ctx={ctx} />
+      ) : ctx.page === "blueprint" ? (
+        <Blueprint ctx={ctx} />
+      ) : ctx.page === "agents" ? (
+        <Agents ctx={ctx} />
+      ) : ctx.page === "data" ? (
+        <Data ctx={ctx} />
+      ) : ctx.page === "tests" ? (
+        <Tests ctx={ctx} />
+      ) : ctx.page === "readiness" ? (
+        <ReadinessView ctx={ctx} />
+      ) : ctx.page === "release" ? (
+        <Release ctx={ctx} />
+      ) : (
+        <Monitoring ctx={ctx} />
+      )}
+    </>
   );
 }
 function Build({ ctx }: { ctx: Context }) {
@@ -54,12 +71,27 @@ function Build({ ctx }: { ctx: Context }) {
   const [focus, setFocus] = useState(false);
   const [code, setCode] = useState(p.code);
   const [busy, setBusy] = useState(false);
+  const [failNext, setFailNext] = useState(false);
+  const [buildError, setBuildError] = useState("");
   const [terminal, setTerminal] = useState(ctx.developer);
   useEffect(() => {
     if (!busy) return;
     const timer = setTimeout(() => {
+      if (failNext) {
+        setBuildError(
+          "The simulated builder stopped before applying changes. Your request is preserved. Retry to prepare the artifacts.",
+        );
+        setFailNext(false);
+        setBusy(false);
+        return;
+      }
       const title = q.match(/["“]([^"”]+)["”]/)?.[1];
+      const change = /approval|approve before|human review/i.test(q)
+        ? approvalChange(p, q)
+        : {};
+      if (change.code) setCode(change.code);
       ctx.patch({
+        ...change,
         title: title || p.title,
         history: [
           {
@@ -76,9 +108,11 @@ function Build({ ctx }: { ctx: Context }) {
           { role: "user", text: q },
           {
             role: "assistant",
-            text: title
-              ? `Updated the preview heading to “${title}”. A snapshot is saved in history.`
-              : 'Your request is captured in a new snapshot. This prototype demonstrates the build journey; the sample layout remains unchanged. Try: Change the heading to "Customer happiness, connected".',
+            text: /approval|approve before|human review/i.test(q)
+              ? "Approval requirement added to the plan, agent configuration and preview. Inspect the connected artifacts, then review and verify this change before shipping."
+              : title
+                ? `Updated the preview heading to “${title}”. A snapshot is saved in history.`
+                : 'Your request is captured in a new snapshot. This prototype demonstrates the build journey; the sample layout remains unchanged. Try: Change the heading to "Customer happiness, connected".',
           },
         ],
       });
@@ -91,8 +125,10 @@ function Build({ ctx }: { ctx: Context }) {
   }, [busy]);
   const send = () => {
     if (!q.trim()) return;
-    if (mode === "Build") setBusy(true);
-    else {
+    if (mode === "Build") {
+      setBuildError("");
+      setBusy(true);
+    } else {
       ctx.patch({
         ...(mode === "Plan"
           ? { blueprint: p.blueprint + "\n\n## Planned refinement\n" + q }
@@ -114,6 +150,7 @@ function Build({ ctx }: { ctx: Context }) {
   };
   return (
     <div className={"build-workspace " + (focus ? "focused" : "")}>
+      <ConnectedContext ctx={ctx} />
       <div className="build-toolbar">
         <span className="badge">
           <span className="status-dot green" />
@@ -151,7 +188,11 @@ function Build({ ctx }: { ctx: Context }) {
               <small>From intent to implementation</small>
             </div>
           </div>
-          <div className="chat-messages">
+          <div
+            className="chat-messages"
+            tabIndex={0}
+            aria-label="Build conversation"
+          >
             {p.messages.map((m, i) => (
               <div className={"chat-message " + m.role} key={i}>
                 {m.role === "assistant" && (
@@ -160,17 +201,22 @@ function Build({ ctx }: { ctx: Context }) {
                 <p>{m.text}</p>
               </div>
             ))}
-            {busy && (
-              <div className="build-progress">
-                <i className="pulse" />
-                Applying your preview change…
-                <small>
-                  Reviewing intent → preparing snapshot → updating preview
-                </small>
+            {busy && <BuildActivity />}
+            {buildError && (
+              <div role="alert" className="notice">
+                {buildError}
+                <button className="btn small-btn" onClick={send}>
+                  Retry build
+                </button>
               </div>
             )}
           </div>
           <div className="chat-suggestions">
+            <button
+              onClick={() => setQ("Add an approval step before publishing.")}
+            >
+              Add approval before publishing
+            </button>
             <button onClick={() => ctx.nav("blueprint", p.id)}>
               Review blueprint
             </button>
@@ -206,8 +252,19 @@ function Build({ ctx }: { ctx: Context }) {
               </button>
             </div>
           </div>
+          {ctx.developer && (
+            <label className="failure-control">
+              <input
+                type="checkbox"
+                checked={failNext}
+                onChange={(e) => setFailNext(e.target.checked)}
+                disabled={busy}
+              />
+              Simulate next build failure
+            </label>
+          )}
           <small className="chat-disclaimer">
-            Simulated generation · Your configuration is saved
+            Simulated generation · Shared project configuration
           </small>
         </aside>
         <section className="preview-pane">
@@ -246,6 +303,7 @@ function Build({ ctx }: { ctx: Context }) {
               </button>
             </div>
           </div>
+          {ctx.developer && <DeveloperFiles ctx={ctx} />}
           {tab === "Code" ? (
             <div className="code-workspace">
               <div>
@@ -278,6 +336,21 @@ function Build({ ctx }: { ctx: Context }) {
                 preview.architect / {p.name.toLowerCase().replaceAll(" ", "-")}
                 <span>Interactive sample</span>
               </div>
+              {p.delivery && (
+                <div className="approval-preview">
+                  <b>Approval required before publishing</b>
+                  <p>
+                    A reviewer must inspect and approve this change before a
+                    release.
+                  </p>
+                  <button
+                    className="btn small-btn"
+                    onClick={() => ctx.nav("review", p.id)}
+                  >
+                    Review this change →
+                  </button>
+                </div>
+              )}
               <SampleApp ctx={ctx} />
             </div>
           )}
@@ -396,6 +469,7 @@ function SampleApp({ ctx }: { ctx: Context }) {
           </>
         ) : tab === "Requests" ? (
           <>
+            <AgentActivity ctx={ctx} />
             <div className="filterbar">
               <div className="search-field">
                 <Search size={16} />
@@ -995,6 +1069,11 @@ function Tests({ ctx }: { ctx: Context }) {
 }
 function Release({ ctx }: { ctx: Context }) {
   const p = ctx.project!;
+  const deliveryReady =
+    !p.delivery ||
+    (p.delivery.reviewed === projectSnapshot(p) &&
+      p.delivery.verified === projectSnapshot(p) &&
+      p.delivery.commits[0]?.snapshot === projectSnapshot(p));
   const ready = p.tests.every((t) => t.status === "Passed");
   return (
     <main className="page">
@@ -1007,11 +1086,31 @@ function Release({ ctx }: { ctx: Context }) {
           <Download size={16} />
           Export
         </button>
-        <button className="btn primary" onClick={() => ctx.setModal("deploy")}>
+        <button
+          className="btn primary"
+          onClick={() =>
+            deliveryReady ? ctx.setModal("deploy") : ctx.nav("review", p.id)
+          }
+        >
           <Globe size={16} />
           New deployment
         </button>
       </PageHead>
+      {p.delivery && (
+        <section className="connected-context">
+          <div>
+            <h2>
+              {deliveryReady
+                ? "Reviewed change ready for a simulated release"
+                : "This change needs review before shipping"}
+            </h2>
+            <p>{p.delivery.intent}</p>
+          </div>
+          <button className="btn" onClick={() => ctx.nav("review", p.id)}>
+            Review commit & evidence →
+          </button>
+        </section>
+      )}
       <div className="release-evidence-callout">
         <ShieldCheck size={20} />
         <span>
@@ -1116,7 +1215,10 @@ function Release({ ctx }: { ctx: Context }) {
               onClick={() =>
                 s === "Development"
                   ? ctx.nav("build", p.id)
-                  : (ctx.setPayload({ environment: s }), ctx.setModal("deploy"))
+                  : deliveryReady
+                    ? (ctx.setPayload({ environment: s }),
+                      ctx.setModal("deploy"))
+                    : ctx.nav("review", p.id)
               }
             >
               {s === "Development" ? "Open preview" : "Deploy here"}

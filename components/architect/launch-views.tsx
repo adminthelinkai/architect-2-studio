@@ -261,6 +261,9 @@ export function PortabilityView({ ctx }: { ctx: Context }) {
       agents: imported.agents.map((a) => ({ ...a, id: uid() })),
       tests: imported.tests.map((t) => ({ ...t, status: "Not run" })),
       deployments: [],
+      delivery: imported.delivery
+        ? { ...imported.delivery, reviewed: "", verified: "", commits: [] }
+        : undefined,
     };
     const next = { ...ctx.ws, projects: [copy, ...ctx.ws.projects] };
     if (

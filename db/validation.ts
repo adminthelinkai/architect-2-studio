@@ -20,6 +20,17 @@ const agent = z.object({
   budget: z.number().finite().min(0.01).max(1000),
 });
 export const projectSchema = z.object({
+  delivery: z
+    .object({
+      intent: text,
+      before: text,
+      reviewed: text,
+      verified: text,
+      commits: z
+        .array(z.object({ id, message: short, snapshot: text, date: short }))
+        .max(100),
+    })
+    .optional(),
   id,
   name: short,
   description: text,

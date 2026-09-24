@@ -1,4 +1,5 @@
 "use client";
+import { projectSnapshot } from "./delivery-adapter";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -896,6 +897,10 @@ function Flow({ ctx }: { ctx: Context }) {
         : "A thoughtful path to production";
     description = "Configure. Verify. Release. Keep a way back.";
     const ready =
+      (!p?.delivery ||
+        (p.delivery.reviewed === projectSnapshot(p) &&
+          p.delivery.verified === projectSnapshot(p) &&
+          p.delivery.commits[0]?.snapshot === projectSnapshot(p))) &&
       p?.tests.every((t) => t.status === "Passed") &&
       p?.agents.every((a) => a.approval);
     content =

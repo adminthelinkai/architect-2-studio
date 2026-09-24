@@ -16,7 +16,15 @@ export type Version = {
   title: string;
   brief: string;
 };
+export type Delivery = {
+  intent: string;
+  before: string;
+  reviewed: string;
+  verified: string;
+  commits: { id: string; message: string; snapshot: string; date: string }[];
+};
 export type Project = {
+  delivery?: Delivery;
   id: string;
   name: string;
   description: string;
