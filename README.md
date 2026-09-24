@@ -1,0 +1,65 @@
+# Architect 2.0
+
+A responsive product prototype for building agentic applications: one project, two ways of working. Guided mode starts with intent and preview; Developer mode opens editable example code and runtime logs.
+
+## What works
+
+- Platform sign-in, server-side authorization, per-user Cloudflare D1 persistence, schema validation, optimistic revision checks, save status, and JSON export.
+- Create projects from prompts, edit the living blueprint, configure multi-framework agent teams, tools, model policies, approval boundaries, and per-run budgets.
+- Interactive application preview with request submission, heading changes, design editing, example-code editing, and preview snapshot restoration.
+- Saved demonstration records, knowledge metadata, membership records, workspace settings, usage budgets, and approval decisions.
+- Searchable projects, command palette (Ctrl/Cmd K), templates, agent library, mobile navigation, workflow canvas, acceptance scenarios, deployment history, and trace/replay views.
+
+## Deliberately simulated
+
+AI code generation; repository fetching/import; OAuth connections; external model and tool execution; file upload/indexing/retrieval; generated-app identity providers; Git branches/pull requests; billing; generated-app deployment, DNS verification, and rollback. These flows are labeled in the interface. No real credentials are requested. The application does not claim to generate arbitrary production apps.
+
+The Test lab checks the actual configured approval boundary. Other scenario results are illustrative. The automated tests in `tests/` exercise the real prototype UI and persistence; they are separate from those simulated product results.
+
+## Run locally
+
+Requires Node 22.13+ and npm. The browser test scripts use an installed Chrome browser.
+
+```sh
+npm ci
+npm run build
+npm run db:local
+npm run dev
+```
+
+Open http://localhost:5173. The starter provides local sign-in through `/auth`. Production sign-in is owned by the Sites hosting dispatcher, which supplies trusted identity headers. Do not expose the worker behind a proxy that allows visitors to spoof those headers.
+
+```sh
+npm run typecheck
+npm run test:e2e
+npm run test:a11y
+```
+
+**E2E tests reset the local simulator's demo workspace.** Use a disposable local database; never redirect these tests to a live deployment. They are intentionally fixed to localhost. Screenshots and test output go to ignored `work/qa/`.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  UI[React workspace and shadcn controls] --> State[Shared project state]
+  State --> API[Authenticated workspace API]
+  API --> Validate[Zod validation and revision checks]
+  Validate --> DB[(Cloudflare D1)]
+  State --> Demo[Clearly labeled simulation adapters]
+  State --> Export[Portable JSON contract]
+  Auth[Platform identity headers] --> API
+```
+
+- `app/`: authenticated entry point, auth experience, and workspace API.
+- `components/architect/`: domain model, workspace shell, project views, and feature flows.
+- `db/` and `drizzle/`: schema, input validation, and generated migration.
+- `tests/`: real browser regression and accessibility checks.
+- `docs/`: feature map and quality assessment.
+
+The workspace is stored as a bounded JSON document per authenticated user. This is appropriate for a prototype, with a 600 KB request limit and optimistic concurrency. It is not a collaborative database design for a production multi-tenant platform.
+
+## Production continuation
+
+Introduce normalized tenant/project membership, durable job queues, sandboxed builds, secure secret storage, framework adapters, GitHub App authorization, real model/tool execution, deployment-provider adapters, executable acceptance tests, OpenTelemetry traces, and audited human approvals. Keep the existing UI contract while replacing the simulation adapters.
+
+Source repository: https://github.com/adminthelinkai/architect-2-studio (private).
