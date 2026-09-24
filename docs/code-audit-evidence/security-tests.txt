@@ -1,0 +1,108 @@
+TAP version 13
+# (node:13860) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# (node:13860) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# Subtest: valid JSON accepts same-origin requests
+ok 1 - valid JSON accepts same-origin requests
+  ---
+  duration_ms: 33.2199
+  ...
+# Subtest: cross-origin writes are denied
+ok 2 - cross-origin writes are denied
+  ---
+  duration_ms: 1.2666
+  ...
+# Subtest: fetch metadata rejects cross-site requests without Origin
+ok 3 - fetch metadata rejects cross-site requests without Origin
+  ---
+  duration_ms: 0.3808
+  ...
+# Subtest: non-JSON media types are denied
+ok 4 - non-JSON media types are denied
+  ---
+  duration_ms: 0.4064
+  ...
+# Subtest: malformed JSON is rejected
+ok 5 - malformed JSON is rejected
+  ---
+  duration_ms: 2.5767
+  ...
+# Subtest: declared oversized content is rejected early
+ok 6 - declared oversized content is rejected early
+  ---
+  duration_ms: 0.9904
+  ...
+# Subtest: byte limit cannot be bypassed with Unicode
+ok 7 - byte limit cannot be bypassed with Unicode
+  ---
+  duration_ms: 3.8245
+  ...
+# Subtest: streamed request cannot bypass the limit
+ok 8 - streamed request cannot bypass the limit
+  ---
+  duration_ms: 1.9885
+  ...
+# Subtest: private error responses are not cacheable
+ok 9 - private error responses are not cacheable
+  ---
+  duration_ms: 1.2742
+  ...
+# Subtest: seed workspace satisfies the shared schema
+ok 10 - seed workspace satisfies the shared schema
+  ---
+  duration_ms: 12.8686
+  ...
+# Subtest: duplicate projects cannot ambiguously update multiple records
+ok 11 - duplicate projects cannot ambiguously update multiple records
+  ---
+  duration_ms: 2.0346
+  ...
+# Subtest: duplicate agent IDs are rejected
+ok 12 - duplicate agent IDs are rejected
+  ---
+  duration_ms: 0.7221
+  ...
+# Subtest: route-breaking project IDs are rejected
+ok 13 - route-breaking project IDs are rejected
+  ---
+  duration_ms: 0.9532
+  ...
+# Subtest: unsafe revision counters are rejected
+ok 14 - unsafe revision counters are rejected
+  ---
+  duration_ms: 0.5903
+  ...
+# Subtest: nonfinite budgets cannot enter stored state
+ok 15 - nonfinite budgets cannot enter stored state
+  ---
+  duration_ms: 0.6781
+  ...
+# Subtest: two authenticated identities have independent workspaces
+ok 16 - two authenticated identities have independent workspaces
+  ---
+  duration_ms: 15.4328
+  ...
+# Subtest: stale updates cannot overwrite a newer revision
+ok 17 - stale updates cannot overwrite a newer revision
+  ---
+  duration_ms: 0.8438
+  ...
+# Subtest: concurrent first saves do not replace the first workspace
+ok 18 - concurrent first saves do not replace the first workspace
+  ---
+  duration_ms: 0.5513
+  ...
+# Subtest: SQL-shaped identifiers remain literal bound parameters
+ok 19 - SQL-shaped identifiers remain literal bound parameters
+  ---
+  duration_ms: 0.4714
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 318.7605

@@ -1,8 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Plus,
-  ArrowUpRight,
   LayoutGrid,
   FolderOpen,
   Workflow,
@@ -35,6 +34,7 @@ import {
   SidebarGroupLabel,
   SidebarInset,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   Dialog,
@@ -51,13 +51,7 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { Toaster, toast } from "sonner";
-import {
-  seedWorkspace,
-  Workspace,
-  Project,
-  createProject,
-  inferName,
-} from "./model";
+import { Workspace, Project, createProject, inferName } from "./model";
 import {
   HomeView,
   ProjectsView,
@@ -71,6 +65,7 @@ import {
 } from "./workspace-views";
 import { ProjectView } from "./project-view";
 import { StartView, PortabilityView } from "./launch-views";
+import { useWorkspace } from "./use-workspace";
 import { FlowModal } from "./flow-modal";
 type Account = { name: string; email: string } | null;
 export type ModalPayload = {
@@ -91,11 +86,6 @@ export type ModalPayload = {
   date?: string;
   version?: string;
   index?: number;
-};
-type WorkspaceResponse = {
-  state?: Workspace;
-  revision: number;
-  error?: string;
 };
 type NavigationContext = {
   registerTool: (
@@ -135,20 +125,23 @@ export type Context = {
   exportProject: () => void;
 };
 export default function Workbench({ user }: { user: Account }) {
-  const [ws, setWs] = useState<Workspace>(seedWorkspace);
+  const {
+    ws,
+    setWs,
+    loaded,
+    saveStatus,
+    saveError,
+    saveConflict,
+    retryLoad,
+    retrySave,
+  } = useWorkspace();
+  const initials = (user?.name || "Studio creator").split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
   const [page, setPage] = useState("overview");
   const [projectId, setProjectId] = useState("");
   const [modal, setModal] = useState("");
   const [payload, setPayload] = useState<ModalPayload>({});
   const [developer, setDeveloper] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [saveStatus, setSaveStatus] = useState("Loading workspace");
-  const [loaded, setLoaded] = useState(false);
-  const [saveError, setSaveError] = useState("");
-  const revision = useRef(0);
-  const chain = useRef(Promise.resolve());
-  const blocked = useRef(false);
-  const [saveConflict, setSaveConflict] = useState(false);
   useEffect(() => {
     const parse = () => {
       const parts = location.hash.slice(1).split("/");
@@ -164,56 +157,15 @@ export default function Workbench({ user }: { user: Account }) {
     parse();
     window.addEventListener("hashchange", parse);
     // Restore the browser-only preference after server hydration.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setDeveloper(localStorage.getItem("architect-view") === "developer");
+    try {
+      // Restore an external browser preference after hydration.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDeveloper(localStorage.getItem("architect-view") === "developer");
+    } catch {
+      /* Storage can be unavailable in privacy mode. */
+    }
     return () => window.removeEventListener("hashchange", parse);
   }, []);
-  useEffect(() => {
-    fetch("/api/workspace")
-      .then(async (r) => {
-        const data = (await r.json()) as WorkspaceResponse;
-        if (!r.ok) throw new Error(data.error);
-        if (data.state) setWs(data.state);
-        revision.current = data.revision;
-        setLoaded(true);
-        setSaveStatus("All changes saved");
-      })
-      .catch((e) => {
-        setSaveError(e.message);
-        setSaveStatus("Not saved");
-      });
-  }, []);
-  useEffect(() => {
-    if (!loaded || blocked.current) return;
-    setSaveStatus("Saving changes");
-    const timer = setTimeout(() => {
-      chain.current = chain.current.then(async () => {
-        if (blocked.current) return;
-        try {
-          const r = await fetch("/api/workspace", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ state: ws, revision: revision.current }),
-          });
-          const d = (await r.json()) as WorkspaceResponse;
-          if (!r.ok) {
-            if (r.status === 409) {
-              blocked.current = true;
-              setSaveConflict(true);
-            }
-            throw new Error(d.error);
-          }
-          revision.current = d.revision;
-          setSaveError("");
-          setSaveStatus("All changes saved");
-        } catch (e) {
-          setSaveStatus("Not saved");
-          setSaveError((e as Error).message);
-        }
-      });
-    }, 650);
-    return () => clearTimeout(timer);
-  }, [ws, loaded]);
   useEffect(() => {
     const fn = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -225,7 +177,14 @@ export default function Workbench({ user }: { user: Account }) {
     return () => window.removeEventListener("keydown", fn);
   }, []);
   useEffect(() => {
-    localStorage.setItem("architect-view", developer ? "developer" : "guided");
+    try {
+      localStorage.setItem(
+        "architect-view",
+        developer ? "developer" : "guided",
+      );
+    } catch {
+      /* The preference is optional. */
+    }
   }, [developer]);
   const nav = (p: string, id = "") => {
     window.location.assign(id ? `#project/${id}/${p}` : `#${p}`);
@@ -250,14 +209,14 @@ export default function Workbench({ user }: { user: Account }) {
     nav("blueprint", p.id);
     toast.success("Your project blueprint is ready");
   };
-  const exportProject = () => {
-    const content = JSON.stringify(project || ws, null, 2);
+  const exportProject = (all = false) => {
+    const content = JSON.stringify(all ? ws : project || ws, null, 2);
     const a = document.createElement("a");
     const url = URL.createObjectURL(
       new Blob([content], { type: "application/json" }),
     );
     a.href = url;
-    a.download = `${project?.name || "architect-workspace"}.json`;
+    a.download = `${(!all && project?.name) || "architect-workspace"}.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     toast.success("Project configuration exported");
@@ -366,9 +325,10 @@ export default function Workbench({ user }: { user: Account }) {
     <SidebarProvider
       style={{ "--sidebar-width": "232px" } as React.CSSProperties}
     >
+      <SidebarNavigationCloser />
       <Toaster position="bottom-right" richColors closeButton />
-      <Sidebar className="architect-sidebar">
-        <SidebarHeader>
+      <Sidebar className="architect-sidebar" inert={!loaded}>
+        <SidebarHeader className="studio-sidebar-header">
           <a className="brand" href="#overview">
             <span className="brandmark">a</span>architect
             <span className="version">2.0</span>
@@ -394,7 +354,11 @@ export default function Workbench({ user }: { user: Account }) {
             <Plus size={17} /> New project <kbd>⌘ K</kbd>
           </button>
         </SidebarHeader>
-        <SidebarContent>
+        <SidebarContent
+          className="studio-sidebar-nav"
+          role="navigation"
+          aria-label="Workspace navigation"
+        >
           {project ? (
             <>
               <button
@@ -472,16 +436,14 @@ export default function Workbench({ user }: { user: Account }) {
             </>
           )}
         </SidebarContent>
-        <SidebarFooter>
-          <button className="usage-card" onClick={() => nav("usage")}>
-            <div>
-              <SparkIcon /> Build with confidence <ArrowUpRight size={14} />
-            </div>
-            <p>1,240 of 2,000 demo credits remaining</p>
-            <div className="usage-track">
-              <i />
-            </div>
-            <small>Usage & budgets →</small>
+        <SidebarFooter className="studio-sidebar-footer">
+          <button
+            className="usage-compact"
+            onClick={() => nav("usage")}
+            aria-label="Usage and budgets: 1,240 demo credits remaining"
+          >
+            <span>Usage & budgets</span>
+            <small>1,240 demo</small>
           </button>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -495,9 +457,9 @@ export default function Workbench({ user }: { user: Account }) {
             </SidebarMenuItem>
           </SidebarMenu>
           <button className="profile" onClick={() => setModal("account")}>
-            <span className="avatar">SC</span>
+            <span className="avatar">{initials}</span>
             <span>
-              Studio creator
+              {user?.name || "Studio creator"}
               <small>{user ? "Connected account" : "Explore workspace"}</small>
             </span>
             <ChevronDown size={14} />
@@ -553,7 +515,7 @@ export default function Workbench({ user }: { user: Account }) {
                 ws.approvals.some((a) => a.status === "Pending") && <i />}
             </button>
             <button aria-label="Account" onClick={() => setModal("account")}>
-              <span className="avatar small">SC</span>
+              <span className="avatar small">{initials}</span>
             </button>
           </div>
         </header>
@@ -562,16 +524,20 @@ export default function Workbench({ user }: { user: Account }) {
             <span>{saveError}</span>
             <button
               onClick={() => {
-                if (blocked.current) {
-                  exportProject();
+                if (saveConflict) {
+                  exportProject(true);
                   return;
                 }
-                setLoaded(true);
-                setWs((s) => ({ ...s }));
+                if (!loaded) retryLoad();
+                else retrySave();
               }}
             >
               {" "}
-              {saveConflict ? "Export unsaved changes" : "Retry save"}
+              {saveConflict
+                ? "Export unsaved changes"
+                : !loaded
+                  ? "Retry loading"
+                  : "Retry save"}
             </button>
             {saveConflict && (
               <button onClick={() => location.reload()}>
@@ -580,7 +546,16 @@ export default function Workbench({ user }: { user: Account }) {
             )}
           </div>
         )}
-        {project ? (
+        {!loaded ? (
+          <main className="page" aria-busy={!saveError}>
+            <h1>
+              {saveError
+                ? "Your workspace could not be loaded"
+                : "Loading your workspace…"}
+            </h1>
+            <p>Editing starts after your saved work is loaded.</p>
+          </main>
+        ) : project ? (
           <ProjectView key={project.id} ctx={ctx} />
         ) : page === "overview" ? (
           <HomeView ctx={ctx} />
@@ -623,7 +598,7 @@ export default function Workbench({ user }: { user: Account }) {
           {saveStatus}
         </div>
       </SidebarInset>
-      <FlowModal ctx={ctx} />
+      {loaded && <FlowModal ctx={ctx} />}
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogContent className="command-modal">
           <DialogTitle className="sr-only">Search workspace</DialogTitle>
@@ -689,6 +664,12 @@ export default function Workbench({ user }: { user: Account }) {
     </SidebarProvider>
   );
 }
-function SparkIcon() {
-  return <span>✦</span>;
+function SidebarNavigationCloser() {
+  const { setOpenMobile } = useSidebar();
+  useEffect(() => {
+    const close = () => setOpenMobile(false);
+    window.addEventListener("hashchange", close);
+    return () => window.removeEventListener("hashchange", close);
+  }, [setOpenMobile]);
+  return null;
 }

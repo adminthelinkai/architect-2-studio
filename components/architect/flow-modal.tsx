@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   Check,
@@ -78,6 +78,13 @@ function Flow({ ctx }: { ctx: Context }) {
   const [toolsList, setTools] = useState(agent?.tools || ["Knowledge search"]);
   const [model, setModel] = useState(agent?.model || "Auto · balanced");
   const [failed, setFailed] = useState(false);
+  const deploymentTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (deploymentTimer.current) clearTimeout(deploymentTimer.current);
+    },
+    [],
+  );
   const close = () => ctx.setModal("");
   const done = (message: string) => {
     ctx.toast.success(message);
@@ -98,6 +105,7 @@ function Flow({ ctx }: { ctx: Context }) {
         value={value}
         onChange={(e) => set(e.target.value)}
         placeholder={placeholder}
+        maxLength={300}
         required
       />
     </label>
@@ -115,6 +123,7 @@ function Flow({ ctx }: { ctx: Context }) {
         onChange={(e) => set(e.target.value)}
         placeholder={placeholder}
         rows={4}
+        maxLength={100000}
         required
       />
     </label>
@@ -174,7 +183,7 @@ function Flow({ ctx }: { ctx: Context }) {
   );
   const saveAgent = () => {
     if (!name.trim()) return setError("Give your agent a name");
-    if (budget < 0.01 || budget > 1000)
+    if (!Number.isFinite(budget) || budget < 0.01 || budget > 1000)
       return setError("Choose a budget between $0.01 and $1,000");
     const a = {
       ...(agent || agentSeed(name, framework)),
@@ -973,12 +982,14 @@ function Flow({ ctx }: { ctx: Context }) {
           )}
           {action(
             "Deploy simulation",
+            // action stores this callback on onClick; it never runs during render.
+            // eslint-disable-next-line react-hooks/refs
             () => {
               if (!ready)
                 return setError("Complete the checks before releasing");
               setBusy(true);
               setStep(1);
-              setTimeout(() => {
+              deploymentTimer.current = setTimeout(() => {
                 setBusy(false);
                 if (failed) {
                   setStep(0);
@@ -1343,8 +1354,12 @@ function Flow({ ctx }: { ctx: Context }) {
           <h3>{ctx.user?.name || "Studio creator"}</h3>
           <p>{ctx.user?.email || "Signed in through the hosting platform"}</p>
         </div>
-        <a className="btn primary" href="/auth">
-          View authentication
+        <a
+          className="btn primary"
+          href="/signout-with-chatgpt?return_to=%2Fauth"
+          target="_top"
+        >
+          Sign out
         </a>
         {notice(
           "Your authenticated account owns the saved workspace. Demo members do not grant access.",

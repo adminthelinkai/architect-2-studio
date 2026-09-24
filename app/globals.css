@@ -3701,3 +3701,111 @@ button {
 .import-summary {
   overflow-wrap: anywhere;
 }
+/* Navigation owns the available height; secondary usage information stays compact. */
+.studio-sidebar-header {
+  padding: 8px 12px !important;
+  flex-shrink: 0;
+}
+.studio-sidebar-header .brand {
+  padding: 12px 8px 14px;
+}
+.studio-sidebar-header .new-project {
+  margin-top: 4px;
+}
+.studio-sidebar-nav {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #777184 transparent;
+}
+.studio-sidebar-nav [data-slot="sidebar-group"] {
+  padding: 8px 10px 0;
+}
+.studio-sidebar-nav [data-slot="sidebar-group-label"] {
+  color: #b9b2c7;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  margin-bottom: 3px;
+}
+.studio-sidebar-nav [data-slot="sidebar-menu"] {
+  gap: 2px;
+}
+.studio-sidebar-nav [data-slot="sidebar-menu-button"] {
+  min-height: 36px;
+  height: auto;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+.studio-sidebar-footer {
+  flex-shrink: 0;
+  padding: 6px 12px 8px !important;
+  gap: 4px;
+  border-top: 1px solid #34313c;
+}
+.usage-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 8px;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  padding: 7px 9px;
+  border-radius: 6px;
+  color: #e1d9f8;
+  background: #282431;
+  font-size: 12px;
+}
+.usage-compact small {
+  color: #bdb4cd;
+  font-size: 12px;
+}
+.studio-sidebar-footer .profile {
+  padding: 7px 0 0;
+  margin-top: 0;
+}
+.studio-sidebar-footer [data-slot="sidebar-menu-button"] {
+  height: 34px;
+  font-size: 13px;
+}
+@media (max-height: 650px) {
+  .studio-sidebar-header .brand {
+    padding: 6px 8px 8px;
+    font-size: 22px;
+  }
+  .studio-sidebar-header .workspace-switch {
+    padding: 7px;
+  }
+  .studio-sidebar-header .workspace-switch small {
+    display: none;
+  }
+  .studio-sidebar-header .new-project {
+    padding: 8px;
+  }
+  .studio-sidebar-footer .profile small {
+    display: none;
+  }
+}
+@media (max-height: 400px) {
+  [data-slot="sidebar-inner"],
+  [data-mobile="true"] > div:last-child {
+    overflow-y: auto;
+  }
+  .studio-sidebar-nav {
+    flex: 1 0 auto;
+    overflow: visible;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* Sonner's default success text misses AA contrast at its 13px size. */
+:root [data-sonner-toaster][data-sonner-theme="light"] { --success-text: #006b26; }

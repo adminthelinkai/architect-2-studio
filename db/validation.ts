@@ -1,7 +1,13 @@
 import { z } from "zod";
+const uniqueIds = (items: { id: string }[]) =>
+  new Set(items.map((item) => item.id)).size === items.length;
 const text = z.string().max(100000),
   short = z.string().max(300),
-  id = z.string().min(1).max(150);
+  id = z
+    .string()
+    .min(1)
+    .max(150)
+    .regex(/^[a-zA-Z0-9_-]+$/);
 const agent = z.object({
   id,
   name: short,
@@ -23,7 +29,7 @@ export const projectSchema = z.object({
   brief: text,
   title: short,
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
-  agents: z.array(agent).max(100),
+  agents: z.array(agent).max(100).refine(uniqueIds, "Duplicate agent IDs"),
   blueprint: text,
   messages: z.array(z.object({ role: short, text })).max(500),
   history: z
@@ -53,9 +59,16 @@ export const projectSchema = z.object({
   code: text,
 });
 export const workspaceInput = z.object({
-  revision: z.number().int().nonnegative(),
+  revision: z
+    .number()
+    .int()
+    .nonnegative()
+    .max(Number.MAX_SAFE_INTEGER - 1),
   state: z.object({
-    projects: z.array(projectSchema).max(60),
+    projects: z
+      .array(projectSchema)
+      .max(60)
+      .refine(uniqueIds, "Duplicate project IDs"),
     connections: z
       .array(
         z.object({

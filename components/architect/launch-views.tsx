@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ArrowRight,
   Check,
@@ -214,7 +214,10 @@ export function PortabilityView({ ctx }: { ctx: Context }) {
   const [filename, setFilename] = useState("");
   const [reading, setReading] = useState(false);
   const p = ctx.ws.projects.find((p) => p.id === selected);
+  const readId = useRef(0);
   async function inspect(file: File | undefined) {
+    const attempt = ++readId.current;
+    setReading(false);
     setError("");
     setImported(null);
     if (!file) return;
@@ -228,6 +231,7 @@ export function PortabilityView({ ctx }: { ctx: Context }) {
     setReading(true);
     try {
       const input = JSON.parse(await file.text());
+      if (attempt !== readId.current) return;
       const raw =
         input?.format === "architect-project/v1" ? input.project : input;
       const result = projectSchema.safeParse(raw);
@@ -237,13 +241,14 @@ export function PortabilityView({ ctx }: { ctx: Context }) {
         );
       setImported(result.data);
     } catch (e) {
+      if (attempt !== readId.current) return;
       setError(
         e instanceof SyntaxError
           ? "This file is not valid JSON."
           : (e as Error).message,
       );
     } finally {
-      setReading(false);
+      if (attempt === readId.current) setReading(false);
     }
   }
   function restore() {
@@ -260,7 +265,7 @@ export function PortabilityView({ ctx }: { ctx: Context }) {
     const next = { ...ctx.ws, projects: [copy, ...ctx.ws.projects] };
     if (
       !workspaceInput.safeParse({ state: next, revision: 0 }).success ||
-      JSON.stringify(next).length > 580000
+      new TextEncoder().encode(JSON.stringify(next)).byteLength > 580000
     ) {
       setError(
         "This import would exceed workspace limits. Export existing work before starting a smaller workspace.",

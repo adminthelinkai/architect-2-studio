@@ -1,0 +1,121 @@
+{
+  "results": [
+    {
+      "name": "Anonymous identity-header spoofing is denied by local dispatcher",
+      "passed": true
+    },
+    {
+      "name": "Unauthorized response is not cacheable",
+      "passed": true
+    },
+    {
+      "name": "Failed initial load gates the editable workspace",
+      "passed": true
+    },
+    {
+      "name": "Failed load never writes demo data",
+      "passed": true
+    },
+    {
+      "name": "Load retry retrieves saved data without a write",
+      "passed": true
+    },
+    {
+      "name": "Failed save keeps the user edit visible",
+      "passed": true
+    },
+    {
+      "name": "Unsaved workspace requests an exit warning",
+      "passed": true
+    },
+    {
+      "name": "Save retry persists the pending edit",
+      "passed": true
+    },
+    {
+      "name": "Old save acknowledgement cannot mark newer edits saved",
+      "passed": true
+    },
+    {
+      "name": "Serial save queue preserves the newest edit",
+      "passed": true
+    },
+    {
+      "name": "Revision conflict blocks automatic overwrites",
+      "passed": true
+    },
+    {
+      "name": "Conflict export includes the whole workspace even inside a project",
+      "passed": true
+    },
+    {
+      "name": "Conflict reload respects the newer server state",
+      "passed": true
+    },
+    {
+      "name": "Sidebar navigation retains useful height at 600px",
+      "passed": true
+    },
+    {
+      "name": "Getting started reachable at 600px",
+      "passed": true
+    },
+    {
+      "name": "Projects reachable at 600px",
+      "passed": true
+    },
+    {
+      "name": "Project portability reachable at 600px",
+      "passed": true
+    },
+    {
+      "name": "Sidebar navigation retains useful height at 768px",
+      "passed": true
+    },
+    {
+      "name": "Getting started reachable at 768px",
+      "passed": true
+    },
+    {
+      "name": "Projects reachable at 768px",
+      "passed": true
+    },
+    {
+      "name": "Project portability reachable at 768px",
+      "passed": true
+    },
+    {
+      "name": "Sidebar navigation retains useful height at 900px",
+      "passed": true
+    },
+    {
+      "name": "Getting started reachable at 900px",
+      "passed": true
+    },
+    {
+      "name": "Projects reachable at 900px",
+      "passed": true
+    },
+    {
+      "name": "Project portability reachable at 900px",
+      "passed": true
+    },
+    {
+      "name": "Open mobile sidebar has no automated accessibility violations",
+      "passed": true
+    },
+    {
+      "name": "Mobile navigation closes after choosing a destination",
+      "passed": true
+    },
+    {
+      "name": "Sign-out removes access to the workspace API",
+      "passed": true
+    },
+    {
+      "name": "Recovery and sidebar flows have no runtime exceptions",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

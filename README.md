@@ -30,8 +30,12 @@ npm run dev
 Open http://localhost:5173. The starter provides local sign-in through `/auth`. Production sign-in is owned by the Sites hosting dispatcher, which supplies trusted identity headers. Do not expose the worker behind a proxy that allows visitors to spoof those headers.
 
 ```sh
+npm run lint
 npm run typecheck
+npm run test:security
 npm run test:e2e
+npm run test:audit
+npm run test:resilience
 npm run test:a11y
 ```
 
@@ -62,10 +66,18 @@ The workspace is stored as a bounded JSON document per authenticated user. This 
 
 Introduce normalized tenant/project membership, durable job queues, sandboxed builds, secure secret storage, framework adapters, GitHub App authorization, real model/tool execution, deployment-provider adapters, executable acceptance tests, OpenTelemetry traces, and audited human approvals. Keep the existing UI contract while replacing the simulation adapters.
 
-Source repository: https://github.com/adminthelinkai/architect-2-studio (private).
+Source repository: https://github.com/adminthelinkai/architect-2-studio.
 
 ## Audit iteration
 
 The owner/user audit is in [docs/OWNER-AUDIT.md](docs/OWNER-AUDIT.md). New screens provide role-oriented onboarding, actual project-configuration JSON import/export, a Markdown engineering handoff, and an evidence ledger that distinguishes configuration from runtime verification. GitHub/ZIP source import remains simulated. Imported configuration is restored as a new draft with new IDs, cleared deployments, and reset scenario results.
 
 Run `node tests/audit.mjs` against the disposable local development workspace to test the new journeys. The original 9/10 review was a prototype self-assessment; the audit provides a narrower comparative score and explicitly does not certify production readiness.
+
+## Public demo and engineering audit
+
+Anyone with a ChatGPT account can sign in to the public Site. Each user receives an independent saved workspace; public source visibility does not expose the workspace database. Google/GitHub/SSO identity flows remain demonstrations. Use Account → Sign out to end the session.
+
+Read [the code audit](docs/CODE-AUDIT.md) and [security boundaries](SECURITY.md). Persistence is isolated in `use-workspace.ts`; HTTP input guards and atomic storage operations are small, separately tested modules. Failed loads gate editing; conflicts preserve a full-workspace export; unsaved state requests an exit warning. The sidebar prioritizes scrollable navigation over a compact usage indicator and closes on mobile navigation.
+
+The GitHub Quality workflow runs static checks, security tests, dependency auditing, a production build, and all browser suites against a disposable local workspace. Local development uses the fixed preview identity and must not be exposed publicly.

@@ -25,7 +25,10 @@ export default async function Auth() {
         >
           {user ? "Open your workspace" : "Continue with ChatGPT"} →
         </a>
-        <small>Secure sign-in and a private, saved workspace.</small>
+        <small>
+          Anyone with a ChatGPT account can try this prototype. Your saved
+          workspace is private to your account.
+        </small>
         <div className="notice">
           Google, GitHub, and enterprise SSO are planned identity options. This
           prototype uses platform sign-in.
